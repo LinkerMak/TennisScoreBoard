@@ -1,14 +1,14 @@
-package tennis.score.board.controller;
+package tennis.score.board.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import tennis.score.board.model.entity.Player;
+import tennis.score.board.service.MatchService;
 import tennis.score.board.service.OngoingMatchService;
 import tennis.score.board.service.PlayerService;
+import tennis.score.board.web.dto.MatchesPage;
 
 import java.util.UUID;
 
@@ -17,12 +17,25 @@ import java.util.UUID;
 public class MatchController {
 
     private final PlayerService playerService;
+    private final MatchService matchService;
     private final OngoingMatchService ongoingMatchService;
 
     @Autowired
-    public MatchController(PlayerService playerService, OngoingMatchService ongoingMatchService) {
+    public MatchController(PlayerService playerService, MatchService matchService, OngoingMatchService ongoingMatchService) {
         this.playerService = playerService;
+        this.matchService = matchService;
         this.ongoingMatchService = ongoingMatchService;
+    }
+
+    @GetMapping()
+    public String getAllMatches(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNumber,
+                                @RequestParam(value = "filter_by_player_name", required = false) String name,
+                                Model model) {
+
+        MatchesPage matchesPage = matchService.getFinishedMatches(pageNumber, name);
+        model.addAttribute("matchesPage", matchesPage);
+
+        return "matches";
     }
 
     @GetMapping("/new")
@@ -40,4 +53,5 @@ public class MatchController {
 
         return "redirect:/match-score?uuid=" + uuid.toString();
     }
+
 }

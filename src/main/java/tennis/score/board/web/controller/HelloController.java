@@ -1,4 +1,4 @@
-package tennis.score.board.controller;
+package tennis.score.board.web.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

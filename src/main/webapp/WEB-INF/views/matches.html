@@ -1,91 +1,123 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tennis Scoreboard | Finished Matches</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
 
-    <script src="js/app.js"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
-
 <body>
 <header class="header">
     <section class="nav-header">
         <div class="brand">
             <div class="nav-toggle">
-                <img src="images/menu.png" alt="Logo" class="logo">
+                <img th:src="@{/images/menu.png}" src="/images/menu.png" alt="Menu" class="logo">
             </div>
             <span class="logo-text">TennisScoreboard</span>
         </div>
-        <div>
-            <nav class="nav-links">
-                <a class="nav-link" href="#">Home</a>
-                <a class="nav-link" href="#">Matches</a>
-            </nav>
-        </div>
+
+        <nav class="nav-links">
+            <a class="nav-link" th:href="@{/}">Home</a>
+            <a class="nav-link" th:href="@{/matches}">Matches</a>
+        </nav>
     </section>
 </header>
+
 <main>
     <div class="container">
         <h1>Matches</h1>
-        <div class="input-container">
-            <input class="input-filter" placeholder="Filter by name" type="text" />
+
+        <form class="input-container" method="get" th:action="@{/matches}">
+            <input
+                    class="input-filter"
+                    type="text"
+                    name="filter_by_player_name"
+                    placeholder="Filter by player name"
+                    th:value="${matchesPage.filterByPlayerName}" />
+
             <div>
-                <a href="#">
-                    <button class="btn-filter">Reset Filter</button>
-                </a>
+                <button type="submit" class="btn-filter">Find</button>
+                <a class="btn-filter" th:href="@{/matches}">Reset Filter</a>
             </div>
+        </form>
+
+        <div class="matches-meta">
+            <p th:text="'Total matches: ' + ${matchesPage.totalItems}">Total matches: 0</p>
+            <p th:if="${matchesPage.totalPages > 0}"
+               th:text="'Page ' + ${matchesPage.currentPage} + ' of ' + ${matchesPage.totalPages}">
+                Page 1 of 1
+            </p>
         </div>
 
         <table class="table-matches">
+            <thead>
             <tr>
                 <th>Player One</th>
                 <th>Player Two</th>
                 <th>Winner</th>
             </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Rafael Nadal</span></td>
+            </thead>
+
+            <tbody>
+            <tr th:if="${matchesPage.matches == null or #lists.isEmpty(matchesPage.matches)}">
+                <td colspan="3">No matches found.</td>
             </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Roger Federer</span></td>
+
+            <tr th:each="match : ${matchesPage.matches}">
+                <td th:text="${match.playerOneName}">Rafael Nadal</td>
+                <td th:text="${match.playerTwoName}">Roger Federer</td>
+                <td>
+                    <span class="winner-name-td" th:text="${match.winnerName}">Rafael Nadal</span>
+                </td>
             </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Rafael Nadal</span></td>
-            </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Roger Federer</span></td>
-            </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Rafael Nadal</span></td>
-            </tr>
+            </tbody>
         </table>
 
-        <div class="pagination">
-            <a class="prev" href="#"> < </a>
-            <a class="num-page current" href="#">1</a>
-            <a class="num-page" href="#">2</a>
-            <a class="num-page" href="#">3</a>
-            <a class="next" href="#"> > </a>
+        <div class="pagination" th:if="${matchesPage.totalPages > 1}">
+            <a class="prev"
+               th:classappend="${!matchesPage.hasPrevious} ? ' disabled' : ''"
+               th:href="${matchesPage.hasPrevious}
+                        ? @{/matches(page=${matchesPage.currentPage - 1}, filter_by_player_name=${matchesPage.filterByPlayerName})}
+                        : @{/matches(page=${matchesPage.currentPage}, filter_by_player_name=${matchesPage.filterByPlayerName})}">
+                &lt;
+            </a>
+
+            <a th:each="pageNumber : ${#numbers.sequence(1, matchesPage.totalPages)}"
+               class="num-page"
+               th:classappend="${pageNumber == matchesPage.currentPage} ? ' current' : ''"
+               th:href="@{/matches(page=${pageNumber}, filter_by_player_name=${matchesPage.filterByPlayerName})}"
+               th:text="${pageNumber}">
+                1
+            </a>
+
+            <a class="next"
+               th:classappend="${!matchesPage.hasNext} ? ' disabled' : ''"
+               th:href="${matchesPage.hasNext}
+                        ? @{/matches(page=${matchesPage.currentPage + 1}, filter_by_player_name=${matchesPage.filterByPlayerName})}
+                        : @{/matches(page=${matchesPage.currentPage}, filter_by_player_name=${matchesPage.filterByPlayerName})}">
+                &gt;
+            </a>
         </div>
     </div>
 </main>
+
 <footer>
     <div class="footer">
-        <p>&copy; Tennis Scoreboard, project from <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a>
-            roadmap.</p>
+        <p>
+            &copy; Tennis Scoreboard, project from
+            <a href="https://zhukovsd.github.io/java-backend-learning-course/"
+               target="_blank"
+               rel="noopener noreferrer">
+                zhukovsd/java-backend-learning-course
+            </a>
+            roadmap.
+        </p>
     </div>
 </footer>
 </body>
