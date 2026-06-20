@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import tennis.score.board.model.entity.Match;
 import tennis.score.board.model.entity.Player;
 import tennis.score.board.service.MatchService;
 import tennis.score.board.service.OngoingMatchService;
 import tennis.score.board.service.PlayerService;
+import tennis.score.board.web.dto.MatchStateDTO;
 import tennis.score.board.web.dto.MatchesPage;
 
 import java.util.UUID;
@@ -28,7 +30,7 @@ public class MatchController {
     }
 
     @GetMapping()
-    public String getAllMatches(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNumber,
+    public String getFinishedMatches(@RequestParam(value = "page", required = false, defaultValue = "1") Integer pageNumber,
                                 @RequestParam(value = "filter_by_player_name", required = false) String name,
                                 Model model) {
 
@@ -51,7 +53,25 @@ public class MatchController {
 
         UUID uuid = ongoingMatchService.createMatch(player1, player2);
 
-        return "redirect:/match-score?uuid=" + uuid.toString();
+        return "redirect:/matches/match-score?uuid=" + uuid.toString();
+    }
+
+    @GetMapping("/match-score")
+    public String getMatchScore(@RequestParam("uuid") UUID uuid,
+                                Model model){
+        MatchStateDTO matchState = ongoingMatchService.getMatchByUUID(uuid);
+
+        model.addAttribute("matchState", matchState);
+        model.addAttribute("uuid", uuid);
+
+        return "match-score";
+    }
+
+    @PostMapping("/match-score")
+    public String updateMatchScore(@RequestParam("uuid") UUID uuid,
+                                   @RequestParam("winnerId") Long winnerId) {
+
+        Match match = ongoingMatchService.getMatchByUUID(uuid);
     }
 
 }

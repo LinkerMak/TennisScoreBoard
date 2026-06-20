@@ -7,6 +7,7 @@ import tennis.score.board.model.entity.Match;
 import tennis.score.board.repository.MatchRepository;
 import tennis.score.board.web.dto.MatchDTO;
 import tennis.score.board.web.dto.MatchesPage;
+import tennis.score.board.web.mapper.MatchMapper;
 
 import java.util.List;
 
@@ -15,14 +16,16 @@ import static java.lang.Math.ceil;
 @Service
 public class MatchService {
 
+    private final MatchMapper matchMapper;
     private final MatchRepository matchRepository;
+
     private static final int PAGE_SIZE = 10;
 
     @Autowired
-    public MatchService(MatchRepository matchRepository) {
+    public MatchService(MatchMapper matchMapper, MatchRepository matchRepository) {
+        this.matchMapper = matchMapper;
         this.matchRepository = matchRepository;
     }
-
 
     @Transactional
     public MatchesPage getFinishedMatches(Integer pageNumber, String name) {
@@ -40,7 +43,7 @@ public class MatchService {
                 ? matchRepository.findAllMatches(offset, PAGE_SIZE)
                 : matchRepository.findAllMatches(name, offset, PAGE_SIZE))
                 .stream()
-                .map(MatchService::toMatchDTO)
+                .map(matchMapper::toMatchDTO)
                 .toList();
 
         return new MatchesPage(
@@ -68,14 +71,6 @@ public class MatchService {
 
         String trimmed = name.trim();
         return trimmed.isEmpty() ? null : trimmed;
-    }
-
-    private static MatchDTO toMatchDTO(Match match) {
-        return new MatchDTO(
-                match.getPlayer1().getName(),
-                match.getPlayer2().getName(),
-                match.getWinner().getName()
-        );
     }
 
 }

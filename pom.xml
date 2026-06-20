@@ -97,6 +97,13 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>1.5.5.Final</version>
+      <scope>compile</scope>
+    </dependency>
+
   </dependencies>
   <build>
     <finalName>TennisScoreBoard</finalName>
@@ -107,8 +114,25 @@
               <configuration>
                   <source>21</source>
                   <target>21</target>
-                <compilerArgs>--enable-preview</compilerArgs>
+                <annotationProcessorPaths>
+                  <path>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok</artifactId>
+                    <version>1.18.46</version>
+                  </path>
+                  <path>
+                    <groupId>org.mapstruct</groupId>
+                    <artifactId>mapstruct-processor</artifactId>
+                    <version>1.5.5.Final</version>
+                  </path>
+                  <path>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok-mapstruct-binding</artifactId>
+                    <version>0.2.0</version>
+                  </path>
+                </annotationProcessorPaths>
               </configuration>
+
           </plugin>
       </plugins>
   </build>
