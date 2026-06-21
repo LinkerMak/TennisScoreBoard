@@ -38,10 +38,6 @@ public class MatchController {
                                 Model model) {
 
         MatchesPage matchesPage = matchService.getFinishedMatches(pageNumber, name);
-        for(MatchDTO match : matchesPage.matches()) {
-            System.out.println(match.player1Name() + " ||| " + match.player2Name() + " ||| " + match.winnerName());
-            System.out.println("===================");
-        }
         model.addAttribute("matchesPage", matchesPage);
 
         return "matches";
