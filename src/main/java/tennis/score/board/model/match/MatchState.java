@@ -24,6 +24,8 @@ public class MatchState {
     }
 
     public void updateScore(Long winnerId) {
+        validatePlayerBelongsToMatch(winnerId);
+
         WinnerSide winnerSide = (Objects.equals(winnerId, player1.getId()))
                 ? PLAYER_1
                 : PLAYER_2;
@@ -31,14 +33,14 @@ public class MatchState {
         score.update(winnerSide);
     }
 
-    public Optional<Player> getWinner() {
+    public Optional<Player> getMatchWinner() {
         return score.getWinnerSide().map(side -> switch (side) {
             case PLAYER_1 -> player1;
             case PLAYER_2 -> player2;
         });
     }
 
-    public void validatePlayerBelongsToMatch(Long id) {
+    private void validatePlayerBelongsToMatch(Long id) {
         if(!Objects.equals(id, player1.getId()) && !Objects.equals(id, player2.getId())) {
             throw new PlayerNotInMatchException(id);
         }

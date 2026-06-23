@@ -40,7 +40,6 @@ public class OngoingMatchService {
 
     public UpdateMatchResult updateMatch(UUID uuid, Long winnerId) {
         MatchState match = getExistingMatch(uuid);
-        match.validatePlayerBelongsToMatch(winnerId);
 
         match.updateScore(winnerId);
         MatchStateDTO matchStateDTO = matchStateMapper.toMatchStateDTO(match);
@@ -54,7 +53,7 @@ public class OngoingMatchService {
     }
 
     private void handleMatchOver(MatchState match, UUID uuid) {
-        Player winner = match.getWinner()
+        Player winner = match.getMatchWinner()
                 .orElseThrow(() -> new IllegalStateException("Не удалось определить победителя завершенного матча"));
 
         matches.remove(uuid);
