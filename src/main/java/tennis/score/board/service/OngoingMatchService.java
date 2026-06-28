@@ -1,7 +1,9 @@
 package tennis.score.board.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import tennis.score.board.exception.BadRequestException;
 import tennis.score.board.exception.EntityNotFoundException;
 import tennis.score.board.exception.PlayerNotInMatchException;
 import tennis.score.board.model.entity.Match;
@@ -27,6 +29,10 @@ public class OngoingMatchService {
 
     private final MatchService matchService;
 
+    private final Map<UUID, Long> removeAt = new ConcurrentHashMap<>();
+
+    private final static Long DELAY_MILLIS = 10_000L;
+
     @Autowired
     public OngoingMatchService(MatchStateMapper matchStateMapper, MatchService matchService) {
         this.matchStateMapper = matchStateMapper;
@@ -34,6 +40,7 @@ public class OngoingMatchService {
     }
 
     public UUID createMatch(Player player1, Player player2) {
+        validatePlayersAreDifferent(player1, player2);
         UUID uuid = UUID.randomUUID();
         matches.put(uuid, new MatchState(player1, player2));
         return uuid;
@@ -45,27 +52,29 @@ public class OngoingMatchService {
 
     public UpdateMatchResult updateMatch(UUID uuid, Long winnerId) {
         MatchState match = getExistingMatch(uuid);
-        validatePlayerBelongsToMatch(match, winnerId);
+        synchronized (match) {
+            validatePlayerBelongsToMatch(match, winnerId);
 
-        WinnerSide winnerSide = (Objects.equals(winnerId, match.getPlayer1().getId()))
-                ? PLAYER_1
-                : PLAYER_2;
+            WinnerSide winnerSide = (Objects.equals(winnerId, match.getPlayer1().getId()))
+                    ? PLAYER_1
+                    : PLAYER_2;
 
-        match.updateScore(winnerSide);
-        MatchStateDTO matchStateDTO = matchStateMapper.toMatchStateDTO(match.snapshot());
+            match.updateScore(winnerSide);
+            MatchStateDTO matchStateDTO = matchStateMapper.toMatchStateDTO(match.snapshot());
 
-        if(match.isOver()) {
-            handleMatchOver(match, uuid);
-            return new UpdateMatchResult(MatchStatus.FINISHED, matchStateDTO);
+            if (match.isOver()) {
+                handleMatchOver(match, uuid);
+                return new UpdateMatchResult(MatchStatus.FINISHED, matchStateDTO);
+            }
+
+            return new UpdateMatchResult(MatchStatus.ONGOING, matchStateDTO);
         }
-
-        return new UpdateMatchResult(MatchStatus.ONGOING, matchStateDTO);
     }
 
     private void handleMatchOver(MatchState match, UUID uuid) {
         Player winner = match.getMatchWinner();
 
-        matches.remove(uuid);
+        removeAt.put(uuid, System.currentTimeMillis() + DELAY_MILLIS);
 
         matchService.saveMatch(new Match(
                 match.getPlayer1(),
@@ -87,6 +96,33 @@ public class OngoingMatchService {
         if(!Objects.equals(id, match.getPlayer1().getId())
                 && !Objects.equals(id, match.getPlayer2().getId())) {
             throw new PlayerNotInMatchException(id);
+        }
+    }
+
+
+    private void validatePlayersAreDifferent(Player player1, Player player2) {
+        if (player1 == null || player2 == null) {
+            throw new BadRequestException("Игроки обязательны");
+        }
+
+        if (player1.getId() != null && player2.getId() != null
+                && Objects.equals(player1.getId(), player2.getId())) {
+            throw new BadRequestException("Нельзя создать матч игрока с самим собой");
+        }
+
+        if (player1.getName() != null && player2.getName() != null
+                && player1.getName().equalsIgnoreCase(player2.getName())) {
+            throw new BadRequestException("Нельзя создать матч игрока с самим собой");
+        }
+    }
+
+    @Scheduled(fixedDelay = 1000)
+    void cleanupFinishedMatches() {
+        for(Map.Entry<UUID, Long> entry : removeAt.entrySet()) {
+            if(System.currentTimeMillis() >= entry.getValue()) {
+                matches.remove(entry.getKey());
+                removeAt.remove(entry.getKey());
+            }
         }
     }
 }
