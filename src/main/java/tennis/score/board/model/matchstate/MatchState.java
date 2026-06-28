@@ -1,16 +1,10 @@
 package tennis.score.board.model.matchstate;
 
 import lombok.Getter;
-import tennis.score.board.exception.PlayerNotInMatchException;
 import tennis.score.board.model.entity.Player;
 import tennis.score.board.model.matchstate.match.MatchScore;
 import tennis.score.board.model.matchstate.match.MatchScoreSnapshot;
 
-import java.util.Objects;
-
-
-import static tennis.score.board.model.matchstate.WinnerSide.PLAYER_1;
-import static tennis.score.board.model.matchstate.WinnerSide.PLAYER_2;
 
 public class MatchState {
 
@@ -27,13 +21,7 @@ public class MatchState {
         this.matchScore = new MatchScore();
     }
 
-    public void updateScore(Long winnerId) {
-        validatePlayerBelongsToMatch(winnerId);
-
-        WinnerSide winnerSide = (Objects.equals(winnerId, player1.getId()))
-                ? PLAYER_1
-                : PLAYER_2;
-
+    public void updateScore(WinnerSide winnerSide) {
         matchScore.pointWonBy(winnerSide);
     }
 
@@ -46,12 +34,6 @@ public class MatchState {
             case PLAYER_1 -> player1;
             case PLAYER_2 -> player2;
         };
-    }
-
-    private void validatePlayerBelongsToMatch(Long id) {
-        if(!Objects.equals(id, player1.getId()) && !Objects.equals(id, player2.getId())) {
-            throw new PlayerNotInMatchException(id);
-        }
     }
 
     public ScoreboardSnapshot snapshot() {

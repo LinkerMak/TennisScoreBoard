@@ -18,7 +18,7 @@
     <section class="nav-header">
         <div class="brand">
             <div class="nav-toggle">
-                <img th:src="@{/resources/images/menu.png}" src="/images/menu.png" alt="Menu" class="logo">
+                <img th:src="@{/resources/images/menu.png}" src="/resources/images/menu.png" alt="Menu" class="logo">
             </div>
             <span class="logo-text">TennisScoreboard</span>
         </div>
@@ -61,7 +61,7 @@
                     <td class="table-text" th:text="${matchState.player1Points}">0</td>
                     <td class="table-text">
                         <form method="post"
-                              th:action="@{/matches/match-score(uuid=${uuid})}">
+                              th:action="@{/match-score(uuid=${uuid})}">
                             <input type="hidden" name="winnerId" th:value="${matchState.player1Id}">
                             <button type="submit" class="score-btn">
                                 Score
@@ -77,7 +77,7 @@
                     <td class="table-text" th:text="${matchState.player2Points}">0</td>
                     <td class="table-text">
                         <form method="post"
-                              th:action="@{/matches/match-score(uuid=${uuid})}">
+                              th:action="@{/match-score(uuid=${uuid})}">
                             <input type="hidden" name="winnerId" th:value="${matchState.player2Id}">
                             <button type="submit" class="score-btn">
                                 Score

@@ -44,10 +44,10 @@ public class RegularGameScore implements GameScore {
 
     @Override
     public Optional<WinnerSide> getWinner() {
-        if(player1Points == Points.FORTY && pointsLeadOfPlayer1() >= REQUIRED_LEAD) {
+        if(player1Points == Points.WIN_POINT && pointsLeadOfPlayer1() >= REQUIRED_LEAD) {
             return Optional.of(WinnerSide.PLAYER_1);
         }
-        else if(player2Points == Points.FORTY && pointsLeadOfPlayer2() >= REQUIRED_LEAD) {
+        else if(player2Points == Points.WIN_POINT && pointsLeadOfPlayer2() >= REQUIRED_LEAD) {
             return Optional.of(WinnerSide.PLAYER_2);
         }
         return Optional.empty();

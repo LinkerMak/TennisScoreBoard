@@ -36,7 +36,7 @@
             <div class="new-match-image"></div>
 
             <div class="form-container center">
-                <form method="post" th:action="@{/matches/new-match}">
+                <form method="post" th:action="@{/new-match}">
                     <p style="color: red;" th:if="${errorMessage}" th:text="${errorMessage}"></p>
 
                     <label class="label-player" for="playerOne">Player one</label>

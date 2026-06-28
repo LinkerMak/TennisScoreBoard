@@ -4,7 +4,8 @@ public enum Points {
     LOVE(0, "0"),
     FIFTEEN(1, "15"),
     THIRTY(2, "30"),
-    FORTY(3, "40");
+    FORTY(3, "40"),
+    WIN_POINT(4, "");
 
     private final int rank;
     private final String displayValue;
@@ -19,7 +20,8 @@ public enum Points {
             case LOVE -> FIFTEEN;
             case FIFTEEN -> THIRTY;
             case THIRTY -> FORTY;
-            case FORTY -> throw new IllegalStateException("Нельзя вызывать next() для FORTY");
+            case FORTY -> WIN_POINT;
+            case WIN_POINT -> throw new IllegalStateException("Нельзя вызывать next() для WIN_POINT");
         };
     }
 
@@ -28,6 +30,9 @@ public enum Points {
     }
 
     public String displayValue() {
+        if (this == Points.WIN_POINT) {
+            throw new IllegalStateException("Нельзя вызывать displayValue() для WIN_POINT");
+        }
         return this.displayValue;
     }
 

@@ -3,9 +3,11 @@ package tennis.score.board.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tennis.score.board.exception.EntityNotFoundException;
+import tennis.score.board.exception.PlayerNotInMatchException;
 import tennis.score.board.model.entity.Match;
 import tennis.score.board.model.entity.Player;
 import tennis.score.board.model.matchstate.MatchState;
+import tennis.score.board.model.matchstate.WinnerSide;
 import tennis.score.board.service.updateresult.MatchStatus;
 import tennis.score.board.service.updateresult.UpdateMatchResult;
 import tennis.score.board.web.dto.MatchStateDTO;
@@ -13,6 +15,9 @@ import tennis.score.board.web.mapper.MatchStateMapper;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static tennis.score.board.model.matchstate.WinnerSide.PLAYER_1;
+import static tennis.score.board.model.matchstate.WinnerSide.PLAYER_2;
 
 @Service
 public class OngoingMatchService {
@@ -40,8 +45,13 @@ public class OngoingMatchService {
 
     public UpdateMatchResult updateMatch(UUID uuid, Long winnerId) {
         MatchState match = getExistingMatch(uuid);
+        validatePlayerBelongsToMatch(match, winnerId);
 
-        match.updateScore(winnerId);
+        WinnerSide winnerSide = (Objects.equals(winnerId, match.getPlayer1().getId()))
+                ? PLAYER_1
+                : PLAYER_2;
+
+        match.updateScore(winnerSide);
         MatchStateDTO matchStateDTO = matchStateMapper.toMatchStateDTO(match.snapshot());
 
         if(match.isOver()) {
@@ -73,4 +83,10 @@ public class OngoingMatchService {
         return matchState;
     }
 
+    private void validatePlayerBelongsToMatch(MatchState match,Long id) {
+        if(!Objects.equals(id, match.getPlayer1().getId())
+                && !Objects.equals(id, match.getPlayer2().getId())) {
+            throw new PlayerNotInMatchException(id);
+        }
+    }
 }
