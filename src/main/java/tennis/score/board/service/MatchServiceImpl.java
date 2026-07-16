@@ -1,0 +1,83 @@
+package tennis.score.board.service;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import tennis.score.board.model.entity.Match;
+import tennis.score.board.repository.MatchRepository;
+import tennis.score.board.web.dto.MatchDTO;
+import tennis.score.board.web.dto.MatchesPage;
+import tennis.score.board.web.mapper.MatchMapper;
+
+import java.util.List;
+
+import static java.lang.Math.ceil;
+
+@Service
+@RequiredArgsConstructor
+public class MatchServiceImpl implements MatchService {
+
+    private final MatchMapper matchMapper;
+    private final MatchRepository matchRepository;
+
+    private static final int PAGE_SIZE = 2;
+
+    @Override
+    @Transactional
+    public void saveMatch(Match match) {
+        matchRepository.save(match);
+    }
+
+    @Override
+    @Transactional
+    public MatchesPage getFinishedMatches(Integer pageNumber, String name) {
+        if (pageNumber == null || pageNumber < 1) pageNumber = 1;
+        String normalizedName = normalizedName(name);
+
+        long totalMatches = (normalizedName == null)
+                ? matchRepository.countAll()
+                : matchRepository.countAll(normalizedName);
+
+        int offset = calculateOffset(pageNumber);
+        int totalPages = calculateTotalPages(totalMatches);
+        pageNumber = normalizedPageNumber(pageNumber, totalPages);
+
+        List<MatchDTO> matches = ((normalizedName == null)
+                ? matchRepository.findAll(offset, PAGE_SIZE)
+                : matchRepository.findAll(normalizedName, offset, PAGE_SIZE))
+                .stream()
+                .map(matchMapper::toMatchDTO)
+                .toList();
+
+        return new MatchesPage(
+                matches,
+                totalMatches,
+                pageNumber,
+                totalPages,
+                PAGE_SIZE,
+                pageNumber > 1,
+                pageNumber < totalPages,
+                normalizedName
+        );
+    }
+
+    private static int calculateOffset(int pageNumber) {
+        return (pageNumber - 1) * PAGE_SIZE;
+    }
+
+    private int calculateTotalPages(long countMatches) {
+        return Math.max((int) ceil((double) countMatches / PAGE_SIZE), 1);
+    }
+
+    private static String normalizedName(String name) {
+        if (name == null) return null;
+
+        String trimmed = name.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private static Integer normalizedPageNumber(Integer pageNumber, Integer totalPages) {
+        return Math.min((pageNumber == null || pageNumber < 1) ? 1 : pageNumber, totalPages);
+    }
+
+}

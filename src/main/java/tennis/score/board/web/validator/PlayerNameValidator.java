@@ -12,24 +12,16 @@ public final class PlayerNameValidator {
     private PlayerNameValidator() {
     }
 
-    public static String normalizeAndValidate(String rawName) {
-        if (rawName == null) {
+    public static void validate(String name) {
+        if (name.isBlank()) {
             throw new BadRequestException("Имя игрока обязательно");
         }
 
-        String normalized = normalize(rawName);
-
-        if (normalized.isBlank()) {
-            throw new BadRequestException("Имя игрока обязательно");
-        }
-
-        if (!NAME_PATTERN.matcher(normalized).matches()) {
+        if (!NAME_PATTERN.matcher(name).matches()) {
             throw new BadRequestException(
                     "Имя игрока может содержать только буквы, пробел, дефис и апостроф"
             );
         }
-
-        return normalized;
     }
 
     public static void validateDifferentPlayers(String player1, String player2) {
@@ -38,7 +30,4 @@ public final class PlayerNameValidator {
         }
     }
 
-    private static String normalize(String rawName) {
-        return rawName.strip().replaceAll("\\s+", " ");
-    }
 }

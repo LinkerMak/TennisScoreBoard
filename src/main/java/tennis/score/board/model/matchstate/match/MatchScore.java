@@ -22,12 +22,12 @@ public class MatchScore {
     }
 
     private void handleFinishSet(WinnerSide winnerSide) {
-        switch(winnerSide) {
+        switch (winnerSide) {
             case WinnerSide.PLAYER_1 -> player1Sets++;
             case WinnerSide.PLAYER_2 -> player2Sets++;
         }
 
-        if(!isOver()) {
+        if (!isOver()) {
             setScore = new SetScore();
         }
     }
@@ -37,7 +37,7 @@ public class MatchScore {
     }
 
     public WinnerSide getWinnerSide() {
-        if(!isOver()) {
+        if (!isOver()) {
             throw new IllegalStateException("Попытка получить победителя, когда матч еще не закончен");
         }
 

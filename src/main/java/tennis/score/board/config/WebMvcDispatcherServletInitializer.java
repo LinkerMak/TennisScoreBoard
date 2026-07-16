@@ -9,23 +9,23 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 public class WebMvcDispatcherServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
-    protected Class<?> [] getRootConfigClasses() {
+    protected Class<?>[] getRootConfigClasses() {
         return new Class[0];
     }
 
     @Override
-    protected Class<?> [] getServletConfigClasses() {
-        return new Class[] {WebMvcConfiguration.class};
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[]{WebMvcConfiguration.class};
     }
 
     @Override
     protected String[] getServletMappings() {
-        return new String[] {"/"};
+        return new String[]{"/"};
     }
 
     @Override
     protected Filter[] getServletFilters() {
-        return new Filter[] {
+        return new Filter[]{
                 getCharacterEncodingFilter(),
                 getHiddenHttpMethodFilter()
         };

@@ -1,6 +1,6 @@
 package tennis.score.board.web.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,18 +15,14 @@ import tennis.score.board.web.dto.MatchStateDTO;
 import java.util.UUID;
 
 @Controller
+@RequiredArgsConstructor
 public class MatchScoreController {
 
     private final OngoingMatchService ongoingMatchService;
 
-    @Autowired
-    public MatchScoreController(OngoingMatchService ongoingMatchService) {
-        this.ongoingMatchService = ongoingMatchService;
-    }
-
     @GetMapping("/match-score")
     public String getMatchScore(@RequestParam("uuid") UUID uuid,
-                                Model model){
+                                Model model) {
         MatchStateDTO matchState = ongoingMatchService.getMatchByUUID(uuid);
 
         model.addAttribute("matchState", matchState);
@@ -42,7 +38,7 @@ public class MatchScoreController {
 
         UpdateMatchResult updateMatchResult = ongoingMatchService.updateMatch(uuid, winnerId);
 
-        if(updateMatchResult.status() == MatchStatus.FINISHED) {
+        if (updateMatchResult.status() == MatchStatus.FINISHED) {
             redirectAttributes.addFlashAttribute("matchState", updateMatchResult.matchState());
             return "redirect:/finished-match-score";
         }

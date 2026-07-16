@@ -31,10 +31,11 @@ public class SetScore {
     public Optional<WinnerSide> pointWonBy(WinnerSide winnerSide) {
         GameResult gameResult = gameScore.pointWonBy(winnerSide);
 
-        switch(gameResult) {
+        switch (gameResult) {
             case GameResult.FINISHED -> handleFinishedResult();
             case GameResult.TRANSITION_TO_DEUCE -> handleTransitionToDeuceResult();
-            case GameResult.CONTINUES -> {}
+            case GameResult.CONTINUES -> {
+            }
         }
 
         return tryFinishSet();
@@ -43,16 +44,16 @@ public class SetScore {
     private void handleFinishedResult() {
         Optional<WinnerSide> winner = gameScore.getWinner();
 
-        if(winner.isEmpty()) {
+        if (winner.isEmpty()) {
             throw new IllegalStateException("Не удалось получить победителя гейма");
         }
 
-        switch(winner.get()) {
+        switch (winner.get()) {
             case WinnerSide.PLAYER_1 -> player1Games++;
             case WinnerSide.PLAYER_2 -> player2Games++;
         }
 
-        if(!shouldStartTieBreak()) {
+        if (!shouldStartTieBreak()) {
             this.gameScore = new RegularGameScore();
         }
     }
@@ -62,7 +63,7 @@ public class SetScore {
     }
 
     private Optional<WinnerSide> tryFinishSet() {
-        if(isExtendedSetPhase()) {
+        if (isExtendedSetPhase()) {
             return tryFinishExtendedSetOrStartTieBreak();
         }
 
@@ -99,11 +100,10 @@ public class SetScore {
     }
 
     private Optional<WinnerSide> tryFinishRegularSet() {
-        if(player1Games == GAMES_TO_WIN_REGULAR_SET
+        if (player1Games == GAMES_TO_WIN_REGULAR_SET
                 && gamesLeadOfPlayer1() >= REQUIRED_LEAD) {
             return Optional.of(WinnerSide.PLAYER_1);
-        }
-        else if(player2Games == GAMES_TO_WIN_REGULAR_SET
+        } else if (player2Games == GAMES_TO_WIN_REGULAR_SET
                 && gamesLeadOfPlayer2() >= REQUIRED_LEAD) {
             return Optional.of(WinnerSide.PLAYER_2);
         }
@@ -118,7 +118,7 @@ public class SetScore {
         return player2Games - player1Games;
     }
 
-    public SetScoreSnapshot snapshot(){
+    public SetScoreSnapshot snapshot() {
         GameScoreSnapshot gameScoreSnapshot = gameScore.snapshot();
 
         return new SetScoreSnapshot(

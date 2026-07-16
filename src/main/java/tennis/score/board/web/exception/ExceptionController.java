@@ -52,7 +52,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    String badRequestException(BadRequestException e, HttpServletRequest request, HttpServletResponse response, Model model){
+    String badRequestException(BadRequestException e, HttpServletRequest request, HttpServletResponse response, Model model) {
         log.warn("Bad request. path={}, message={}", request.getRequestURI(), e.getMessage());
 
         addAttributesAndSetStatus(e.getMessage(),
