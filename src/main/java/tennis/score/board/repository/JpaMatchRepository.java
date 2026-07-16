@@ -25,12 +25,18 @@ public class JpaMatchRepository implements MatchRepository {
     private static final String FIND_ALL_JPQL = """
             select m
             from Match m
+            join fetch m.player1
+            join fetch m.player2
+            join fetch m.winner
             order by m.id desc
             """;
 
     private static final String FIND_ALL_WITH_NAME_FILTER_JPQL = """
             select m
             from Match m
+            join fetch m.player1
+            join fetch m.player2
+            join fetch m.winner
             where lower(m.player1.name) like :playerName
             or lower(m.player2.name) like :playerName
             order by m.id desc
