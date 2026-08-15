@@ -29,7 +29,7 @@ public class MatchState {
     }
 
     public Player getMatchWinner() {
-        return switch(matchScore.getWinnerSide()) {
+        return switch (matchScore.getWinnerSide()) {
             case PLAYER_1 -> player1;
             case PLAYER_2 -> player2;
         };

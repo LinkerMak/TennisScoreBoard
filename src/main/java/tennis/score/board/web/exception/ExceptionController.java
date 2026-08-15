@@ -16,10 +16,10 @@ import tennis.score.board.exception.PlayerNotInMatchException;
 public class ExceptionController {
 
     @ExceptionHandler(Exception.class)
-    String handleException(Exception e, HttpServletRequest request, HttpServletResponse response, Model model) {
+    public String handleException(Exception e, HttpServletRequest request, HttpServletResponse response, Model model) {
         log.error("Unhandled exception. path={}, message={}", request.getRequestURI(), e.getMessage(), e);
 
-        addAttributesAndSetStatus("Внутренняя ошибка сервера: " + e.getMessage(),
+        addAttributesAndSetStatus("Внутренняя ошибка сервера",
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 request,
                 response,
@@ -28,10 +28,10 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(PlayerNotInMatchException.class)
-    String playerNotInMatch(PlayerNotInMatchException e, HttpServletRequest request, HttpServletResponse response, Model model) {
+    public String playerNotInMatch(PlayerNotInMatchException e, HttpServletRequest request, HttpServletResponse response, Model model) {
         log.warn("Player not in match. path={}, message={}", request.getRequestURI(), e.getMessage());
 
-        addAttributesAndSetStatus(e.getMessage(),
+        addAttributesAndSetStatus("Player not in match",
                 HttpStatus.BAD_REQUEST,
                 request,
                 response,
@@ -40,10 +40,10 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    String entityNotFound(EntityNotFoundException e, HttpServletRequest request, HttpServletResponse response, Model model) {
+    public String entityNotFound(EntityNotFoundException e, HttpServletRequest request, HttpServletResponse response, Model model) {
         log.warn("Entity not found. path={}, message={}", request.getRequestURI(), e.getMessage());
 
-        addAttributesAndSetStatus(e.getMessage(),
+        addAttributesAndSetStatus("Entity not found",
                 HttpStatus.NOT_FOUND,
                 request,
                 response,
@@ -52,10 +52,10 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    String badRequestException(BadRequestException e, HttpServletRequest request, HttpServletResponse response, Model model){
+    public String badRequestException(BadRequestException e, HttpServletRequest request, HttpServletResponse response, Model model) {
         log.warn("Bad request. path={}, message={}", request.getRequestURI(), e.getMessage());
 
-        addAttributesAndSetStatus(e.getMessage(),
+        addAttributesAndSetStatus("Bad request",
                 HttpStatus.BAD_REQUEST,
                 request,
                 response,

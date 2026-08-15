@@ -23,7 +23,7 @@ public class TieBreakGameScore implements GameScore {
             case PLAYER_2 -> pointsPlayer2++;
         }
 
-        if(tieBreakMinPointsCondition() && tieBreakLeadCondition()){
+        if (tieBreakMinPointsCondition() && tieBreakLeadCondition()) {
             return GameResult.FINISHED;
         }
         return GameResult.CONTINUES;
@@ -51,8 +51,7 @@ public class TieBreakGameScore implements GameScore {
         if (tieBreakMinPointsCondition() && tieBreakLeadCondition()) {
             return Optional.of(pointsPlayer1 > pointsPlayer2
                     ? WinnerSide.PLAYER_1 : WinnerSide.PLAYER_2);
-        }
-        else throw new IllegalStateException("Не удалось опредедить победителя тай-брейка");
+        } else throw new IllegalStateException("Не удалось опредедить победителя тай-брейка");
     }
 
     @Override

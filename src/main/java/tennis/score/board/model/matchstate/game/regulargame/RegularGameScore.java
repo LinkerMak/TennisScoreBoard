@@ -16,7 +16,7 @@ public class RegularGameScore implements GameScore {
 
     @Override
     public GameResult pointWonBy(WinnerSide winnerSide) {
-        switch(winnerSide) {
+        switch (winnerSide) {
             case PLAYER_1 -> player1Points = player1Points.next();
             case PLAYER_2 -> player2Points = player2Points.next();
         }
@@ -24,10 +24,9 @@ public class RegularGameScore implements GameScore {
     }
 
     private GameResult gameResult() {
-        if(isFinished()) {
+        if (isFinished()) {
             return GameResult.FINISHED;
-        }
-        else if(isDeuce()) {
+        } else if (isDeuce()) {
             return GameResult.TRANSITION_TO_DEUCE;
         }
 
@@ -44,10 +43,9 @@ public class RegularGameScore implements GameScore {
 
     @Override
     public Optional<WinnerSide> getWinner() {
-        if(player1Points == Points.WIN_POINT && pointsLeadOfPlayer1() >= REQUIRED_LEAD) {
+        if (player1Points == Points.WIN_POINT && pointsLeadOfPlayer1() >= REQUIRED_LEAD) {
             return Optional.of(WinnerSide.PLAYER_1);
-        }
-        else if(player2Points == Points.WIN_POINT && pointsLeadOfPlayer2() >= REQUIRED_LEAD) {
+        } else if (player2Points == Points.WIN_POINT && pointsLeadOfPlayer2() >= REQUIRED_LEAD) {
             return Optional.of(WinnerSide.PLAYER_2);
         }
         return Optional.empty();

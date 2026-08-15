@@ -13,7 +13,7 @@ public class DeuceGameScore implements GameScore {
 
     @Override
     public GameResult pointWonBy(WinnerSide winnerSide) {
-        return switch(pointsState) {
+        return switch (pointsState) {
             case DeucePoints.DEUCE -> handleDueceState(winnerSide);
             case DeucePoints.ADVANTAGE_P1 -> handleAdvantage_P1(winnerSide);
             case DeucePoints.ADVANTAGE_P2 -> handleAdvantage_P2(winnerSide);
@@ -21,11 +21,11 @@ public class DeuceGameScore implements GameScore {
     }
 
     private GameResult handleDueceState(WinnerSide winnerSide) {
-        if(winnerSide == WinnerSide.PLAYER_1) {
+        if (winnerSide == WinnerSide.PLAYER_1) {
             pointsState = DeucePoints.ADVANTAGE_P1;
         }
 
-        if(winnerSide == WinnerSide.PLAYER_2) {
+        if (winnerSide == WinnerSide.PLAYER_2) {
             pointsState = DeucePoints.ADVANTAGE_P2;
         }
 
@@ -33,20 +33,18 @@ public class DeuceGameScore implements GameScore {
     }
 
     private GameResult handleAdvantage_P1(WinnerSide winnerSide) {
-        if(winnerSide == WinnerSide.PLAYER_1) {
+        if (winnerSide == WinnerSide.PLAYER_1) {
             return GameResult.FINISHED;
-        }
-        else {
+        } else {
             pointsState = DeucePoints.DEUCE;
             return GameResult.CONTINUES;
         }
     }
 
     private GameResult handleAdvantage_P2(WinnerSide winnerSide) {
-        if(winnerSide == WinnerSide.PLAYER_2) {
+        if (winnerSide == WinnerSide.PLAYER_2) {
             return GameResult.FINISHED;
-        }
-        else {
+        } else {
             pointsState = DeucePoints.DEUCE;
             return GameResult.CONTINUES;
         }
@@ -54,7 +52,7 @@ public class DeuceGameScore implements GameScore {
 
     @Override
     public Optional<WinnerSide> getWinner() {
-        return Optional.of(switch(pointsState) {
+        return Optional.of(switch (pointsState) {
             case ADVANTAGE_P1 -> WinnerSide.PLAYER_1;
             case ADVANTAGE_P2 -> WinnerSide.PLAYER_2;
             case DEUCE -> throw new IllegalStateException("Не удалось определить победителя деюса");

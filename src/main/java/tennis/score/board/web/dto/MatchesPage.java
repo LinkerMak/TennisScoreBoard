@@ -2,7 +2,7 @@ package tennis.score.board.web.dto;
 
 import java.util.List;
 
-public record MatchesPage (
+public record MatchesPage(
         List<MatchDTO> matches,
         long totalMatches,
         int currentPage,

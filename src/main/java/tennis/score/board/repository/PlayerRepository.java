@@ -1,34 +1,15 @@
 package tennis.score.board.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
 import tennis.score.board.model.entity.Player;
 
 import java.util.Optional;
 
-@Repository
-public class PlayerRepository {
+public interface PlayerRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    Optional<Player> findByName(String name);
 
-    public Optional<Player> findByName(String name) {
-        return entityManager.createQuery("select p from Player p where p.name = :name", Player.class)
-                .setParameter("name", name)
-                .getResultList()
-                .stream()
-                .findFirst();
-    }
+    Player save(Player player);
 
-    public Player save(Player player) {
-        entityManager.persist(player);
-        return player;
-    }
+    Player saveAndFlush(Player player);
 
-    public Player saveAndFlush(Player player) {
-        save(player);
-        entityManager.flush();
-        return player;
-    }
 }
